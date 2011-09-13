@@ -279,7 +279,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							// only look at rows greater than the absolute
 							// smallest value specified
 							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-							        && (Math.abs((Double) o2) > smallestAbsoluteValue)) {
+							        || (Math.abs((Double) o2) > smallestAbsoluteValue)) {
 								double percentageDiff;
 								percentageDiff = calculatePercentageDifference((Double) o1, (Double) o2);
 								if (percentageDiff > tolerancePercentage) {
@@ -298,7 +298,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							// NSB - 16/6/04 - Added as Oracle returns Big
 							// Decimals
 							if ((Math.abs(((BigDecimal) o1).doubleValue()) > smallestAbsoluteValue)
-							        && (Math.abs((Double) o2) > smallestAbsoluteValue)) {
+							        || (Math.abs((Double) o2) > smallestAbsoluteValue)) {
 								double percentageDiff =
 								        Math.abs(((((BigDecimal) o1).doubleValue() - (Double) o2) / ((BigDecimal) o1)
 								                .doubleValue()) * 100);
@@ -317,7 +317,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							// NSB - 16/6/04 - Added as Oracle returns Big
 							// Decimals
 							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-							        && (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
+							        || (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
 								double percentageDiff =
 								        Math.abs(((((Double) o1) - ((BigDecimal) o2).doubleValue()) / (Double) o1) * 100);
 								if (percentageDiff > tolerancePercentage) {
@@ -332,7 +332,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 						} else if (o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
 
 							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
-							        && ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
+							        || ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
 								BigDecimal percentageDiff =
 								        ((BigDecimal) o1).subtract(((BigDecimal) o2))
 								                .divide(((BigDecimal) o1), 6, RoundingMode.HALF_UP)
@@ -351,7 +351,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 								// only look at rows greater than the absolute
 								// smallest value specified
 								if (Math.abs(((Integer) o1).intValue()) > smallestAbsoluteValue
-								        && Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
+								        || Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
 									int percentageDiff = Math.abs((((Integer) o1 - (Integer) o2) / (Integer) o1) * 100);
 									if (percentageDiff > tolerancePercentage) {
 										int absDiff = Math.abs((Integer) o1 - (Integer) o2);
@@ -380,14 +380,14 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							}
 						} else if (o1 instanceof Boolean && o2 instanceof Boolean) {
 
-							if (!(o1 == o2)) {
+							if (!o1.equals(o2)) {
 								logDifference((String) inputProperties1.get("key"), key, input1Alias,
 								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
 								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
 								matchedRow = false;
 							}
 						} else if (o1 instanceof java.util.Date && o2 instanceof java.util.Date) {
-							if (!(o1 == o2)) {
+							if (!o1.equals(o2)) {
 								logDifference((String) inputProperties1.get("key"), key, input1Alias,
 								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
 								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
@@ -552,7 +552,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 						if (o1 instanceof Double && o2 instanceof Double) {
 							// only look at rows greater than the absolute smallest value specified
 							if (Math.abs((Double) o1) > smallestAbsoluteValue
-							        && Math.abs((Double) o2) > smallestAbsoluteValue) {
+							        || Math.abs((Double) o2) > smallestAbsoluteValue) {
 								double percentageDiff = Math.abs((((Double) o1 - (Double) o2) / ((Double) o1)) * 100);
 								if (percentageDiff > tolerancePercentage) {
 									double absDiff;
@@ -568,7 +568,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							// only look at rows greater than the absolute smallest value specified
 							// NSB - 16/6/04 - Added as Oracle returns Big Decimals
 							if ((Math.abs(((BigDecimal) o1).doubleValue()) > smallestAbsoluteValue)
-							        && (Math.abs(((Double) o2)) > smallestAbsoluteValue)) {
+									|| (Math.abs(((Double) o2)) > smallestAbsoluteValue)) {
 								double percentageDiff =
 								        Math.abs(((((BigDecimal) o1).doubleValue() - ((Double) o2)) / ((BigDecimal) o1)
 								                .doubleValue()) * 100);
@@ -587,7 +587,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							// NSB - 16/6/04 - Added as Oracle returns Big
 							// Decimals
 							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-							        && (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
+									|| (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
 								double percentageDiff =
 								        Math.abs((((Double) o1 - ((BigDecimal) o2).doubleValue()) / (Double) o1) * 100);
 								if (percentageDiff > tolerancePercentage) {
@@ -601,7 +601,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 							}
 						} else if (o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
 							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
-							        && ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
+									|| ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
 								BigDecimal percentageDiff =
 								        ((BigDecimal) o1).subtract(((BigDecimal) o2))
 								                .divide(((BigDecimal) o1), 6, RoundingMode.HALF_UP)
@@ -620,7 +620,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 								// only look at rows greater than the absolute
 								// smallest value specified
 								if (Math.abs(((Integer) o1).intValue()) > smallestAbsoluteValue
-								        && Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
+										|| Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
 									int percentageDiff = Math.abs((((Integer) o1 - (Integer) o2) / (Integer) o1) * 100);
 									if (percentageDiff > tolerancePercentage) {
 										int absDiff = Math.abs((Integer) o1 - (Integer) o2);
