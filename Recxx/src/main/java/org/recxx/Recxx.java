@@ -333,10 +333,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 
 							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
 							        || ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
-								BigDecimal percentageDiff =
-								        ((BigDecimal) o1).subtract(((BigDecimal) o2))
-								                .divide(((BigDecimal) o1), 6, RoundingMode.HALF_UP)
-								                .multiply(BigDecimal.valueOf(100));
+                        		BigDecimal percentageDiff = ((BigDecimal) o1).subtract(((BigDecimal) o2)).divide(( ((BigDecimal) o1).compareTo(BigDecimal.valueOf(0)) == 0  ? (BigDecimal) o2 : (BigDecimal) o1),6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 								if (percentageDiff.compareTo(BigDecimal.valueOf(tolerancePercentage)) == 1) {
 									BigDecimal absDiff = ((BigDecimal) o1).subtract((BigDecimal) o2).abs();
 									logDifference((String) inputProperties1.get("key"), key, input1Alias,
@@ -602,10 +599,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 						} else if (o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
 							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
 									|| ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
-								BigDecimal percentageDiff =
-								        ((BigDecimal) o1).subtract(((BigDecimal) o2))
-								                .divide(((BigDecimal) o1), 6, RoundingMode.HALF_UP)
-								                .multiply(BigDecimal.valueOf(100));
+                        		BigDecimal percentageDiff = ((BigDecimal) o1).subtract(((BigDecimal) o2)).divide(( ((BigDecimal) o1).compareTo(BigDecimal.valueOf(0)) == 0  ? (BigDecimal) o2 : (BigDecimal) o1),6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
 								if (percentageDiff.compareTo(BigDecimal.valueOf(tolerancePercentage)) == 1) {
 									BigDecimal absDiff = ((BigDecimal) o1).subtract((BigDecimal) o2).abs();
 									logDifference((String) inputProperties1.get("key"), key, input1Alias,
