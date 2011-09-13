@@ -199,34 +199,31 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
 
                 if (line != null) {
                     ArrayList row = new ArrayList();
-                    int columnCounter = 0;
-                    StringTokenizer st = new StringTokenizer(correctLine(line),
-                            m_Properties.getProperty("delimiter", " "));
-
-
-                    while (st.hasMoreTokens()) {
+                     
+                    String pattern = m_Properties.getProperty("delimiter", " ") + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+                    String[] fields = correctLine(line).split(pattern);
+                    
+                    for (int i = 0; i < fields.length; i++) {
+						
                         // System.err.println(st.countTokens());
 
-                        if (isAColumnToCompare(columnCounter, columns)) {
+                        if (isAColumnToCompare(i, columns)) {
                             // cast the object to the correct data type
-                            Object o = castObject(st.nextToken(),
-                                    columnsClassNames[columnCounter]);
+                            Object o = castObject(fields[i],
+                                    columnsClassNames[i]);
 
                             // for doubles which are null, and handleNullsAsZero
                             // is true
                             // default the value to 0.0
-                            if (o == null && columnsClassNames[columnCounter].equals("java.lang.Double")
+                            if (o == null && columnsClassNames[i].equals("java.lang.Double")
                                     && handleNullsAsZero) {
                                 row.add(new Double(0.0));
                             } else {
                                 row.add(o);
                             }
-                        } else
-                            st.nextToken();
-
-                        columnCounter++;
+                        }
                     }
-
+                    
                     // try and save memory by trimming the array list to size
                     row.trimToSize();
 
@@ -407,10 +404,6 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
                 m_ColumnNames = br.readLine();
 
                 if (Boolean.valueOf(m_Properties.getProperty("dataTypesSupplied"))) {
-                    /*
-                    for data produced by using the yolus regression sink, the second row is always
-                    the data types of the 1st row columns..so ignore it if the property is set to true
-                    */
                     br.readLine();
                 }
             } catch (IOException e) {
@@ -433,11 +426,11 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
      * @return the newly cast object
      */
     private Object castObject(Object o, String columnDataType) {
-        if (columnDataType.equals("java.lang.Double"))
+        if (columnDataType.equals("java.lang.Double")) {
+			String clean = ((String) o).replaceAll("\"", "");
             return new Double(Recxx.m_dpFormatter.format(Double
-                    .parseDouble((String) o)));
-
-        else if (columnDataType.equals("java.lang.Integer"))
+                    .parseDouble(clean.equals("") ? "0" : clean)));
+        } else if (columnDataType.equals("java.lang.Integer"))
             return new Integer((String) o);
 
         else if (columnDataType.equals("java.lang.String")) {
