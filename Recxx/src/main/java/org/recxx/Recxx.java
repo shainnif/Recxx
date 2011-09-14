@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
@@ -28,6 +27,7 @@ import org.recxx.utils.ArrayUtils;
 import org.recxx.utils.CONSTANTS;
 import org.recxx.utils.CloseableUtils;
 import org.recxx.utils.ReconciliationMode;
+import org.recxx.utils.SuperProperties;
 import org.recxx.writer.BufferedWriterManager;
 import org.recxx.writer.CSVLogger;
 
@@ -214,7 +214,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 
 		int inputData1Size, inputData2Size;
 
-		Properties inputProperties1, inputProperties2;
+		SuperProperties inputProperties1, inputProperties2;
 
 		String input1Alias, input2Alias;
 
@@ -226,12 +226,12 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		if (m_dataToCompare.size() >= 2) {
 			inputColumns1 = (String[]) ((HashMap) m_dataToCompare.get("1")).get(COLUMNS);
 			inputData1 = (HashMap) ((HashMap) m_dataToCompare.get("1")).get(DATA);
-			inputProperties1 = (Properties) ((HashMap) m_dataToCompare.get("1")).get(PROPERTIES);
+			inputProperties1 = (SuperProperties) ((HashMap) m_dataToCompare.get("1")).get(PROPERTIES);
 			inputData1Size = inputData1.size();
 
 			inputColumns2 = (String[]) ((HashMap) m_dataToCompare.get("2")).get(COLUMNS);
 			inputData2 = (HashMap) ((HashMap) m_dataToCompare.get("2")).get(DATA);
-			inputProperties2 = (Properties) ((HashMap) m_dataToCompare.get("2")).get(PROPERTIES);
+			inputProperties2 = (SuperProperties) ((HashMap) m_dataToCompare.get("2")).get(PROPERTIES);
 			inputData2Size = inputData2.size();
 
 			// need a position of the compare columns in the array - do this by
@@ -485,8 +485,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		String[] inputColumns2;
 		HashMap inputData1;
 		HashMap inputData2;
-		Properties inputProperties1;
-		Properties inputProperties2;
+		SuperProperties inputProperties1;
+		SuperProperties inputProperties2;
 
 		String input1Alias;
 		String input2Alias;
@@ -500,11 +500,11 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		if (m_dataToCompare.size() >= 2) {
 			inputColumns1 = (String[]) ((HashMap) m_dataToCompare.get("1")).get(COLUMNS);
 			inputData1 = (HashMap) ((HashMap) m_dataToCompare.get("1")).get(DATA);
-			inputProperties1 = (Properties) ((HashMap) m_dataToCompare.get("1")).get(PROPERTIES);
+			inputProperties1 = (SuperProperties) ((HashMap) m_dataToCompare.get("1")).get(PROPERTIES);
 
 			inputColumns2 = (String[]) ((HashMap) m_dataToCompare.get("2")).get(COLUMNS);
 			inputData2 = (HashMap) ((HashMap) m_dataToCompare.get("2")).get(DATA);
-			inputProperties2 = (Properties) ((HashMap) m_dataToCompare.get("2")).get(PROPERTIES);
+			inputProperties2 = (SuperProperties) ((HashMap) m_dataToCompare.get("2")).get(PROPERTIES);
 
 			// need a position of the compare columns in the array - do this by
 			// making every column which isn't a
@@ -726,7 +726,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 
 		for (Object o : m_propertiesMap.keySet()) {
 			String key = (String) o;
-			Properties sourceProperties = (Properties) m_propertiesMap.get((key));
+			SuperProperties sourceProperties = (SuperProperties) m_propertiesMap.get((key));
 
 			String type = (String) sourceProperties.get("type");
 			RecxxWorker worker = null;
@@ -755,7 +755,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 	private void loadProperties() throws Exception {
 		// load most of the parameters in at the beginning, as it looks neater in the log files
 		m_propertiesMap = new HashMap();
-		Properties props;
+		SuperProperties props;
 
 		String propertiesStub = format("%s.%s.", prefix, m_appName);
 
@@ -803,7 +803,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 				throw new PropertiesFileException("No type found for Reconciliation Source: " + inputStub + "name.type");
 			}
 
-			props = new Properties();
+			props = new SuperProperties();
 			props.setProperty("alias", inputAlias);
 			props.setProperty("type", inputType);
 			props.setProperty("tolerance", tolerance);
@@ -1070,11 +1070,11 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 
 		// loop through the sources and start them loading...
 		Iterator sourceIterator = m_propertiesMap.keySet().iterator();
-		Properties props = new Properties();
+		SuperProperties props = new SuperProperties();
 
 		while (sourceIterator.hasNext()) {
 			String key = (String) sourceIterator.next();
-			props = (Properties) m_propertiesMap.get((key));
+			props = (SuperProperties) m_propertiesMap.get((key));
 		}
 
 		// at some point, put this in the equivalent of a toString() method

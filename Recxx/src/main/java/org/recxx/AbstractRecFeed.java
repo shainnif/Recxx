@@ -1,6 +1,6 @@
 package org.recxx;
 
-import org.recxx.utils.ArrayUtils;
+import static java.lang.Boolean.valueOf;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +17,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.lang.Boolean.valueOf;
+import org.recxx.utils.ArrayUtils;
+import org.recxx.utils.SuperProperties;
 
 /**
  * Abstract class created to represent common methods for handling a
@@ -32,7 +33,7 @@ public abstract class AbstractRecFeed {
     protected String propertiesFile = "";
     protected String prefix = "";
     protected Properties props = null;
-    protected Properties superProps = null;
+    protected SuperProperties superProps = null;
 
     protected boolean keyColumnPositionsSet = false;
     protected List<Integer> keyColumnPositions;
@@ -63,7 +64,7 @@ public abstract class AbstractRecFeed {
         this.prefix = prefix;
         props = new Properties();
         props.getProperty(propertiesFile);
-        superProps = new Properties();
+        superProps = new SuperProperties();
         try {
             superProps.load(new FileInputStream(file));
         } catch (FileNotFoundException e) {
