@@ -77,6 +77,8 @@ import java.util.logging.Logger;
  */
 public class CSVLogger {
 
+	private static final String QUOTE = "\"";
+
 	private static final Logger LOGGER = Logger.getLogger(CSVLogger.class.getName());
 
 	public static final String DEFAULT_DELIMITER = ",";
@@ -168,6 +170,9 @@ public class CSVLogger {
 	public void write(String string) throws IOException {
 		if (isNullOrEmpty(string)) {
 			string = nullString;
+		}
+		else if (string.contains(delimiter) && !string.startsWith(QUOTE) && !string.endsWith(QUOTE)) {
+			string = QUOTE + string + QUOTE;
 		}
 		writer.write(string + delimiter);
 	}
