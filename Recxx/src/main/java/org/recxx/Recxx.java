@@ -780,7 +780,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 			break;
 		case TW:
 			LOGGER.info("Performing two-way reconciliation...");
-			reconciliationMode = OW.toString();
+			reconciliationMode = TW.toString();
 			break;
 		}
 
