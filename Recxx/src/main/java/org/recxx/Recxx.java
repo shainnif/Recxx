@@ -454,8 +454,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 					if (((o1 instanceof Double) || (o1 instanceof Integer) || (o1 instanceof String))) {
 						// only log a difference here, if o1 is <> 0.0, even if
 						// 02 is actually missing..
-						logDifference((String) inputProperties2.get("key"), key, input2Alias, "Missing", "Missing",
-						        input1Alias, inputColumns2[anInput2CompareColumnPosition], o1, "", "");
+						logDifference((String) inputProperties2.get("key"), key, input1Alias, "Missing", "Missing",
+						        input2Alias, inputColumns2[anInput2CompareColumnPosition], o1, "", "");
 					}
 				}
 			}
@@ -469,7 +469,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 
 	private double calculatePercentageDifference(Double o1, Double o2) {
 		double percentageDiff;
-		percentageDiff = Math.abs(o1 - o2) / o1 * 100;
+		percentageDiff = Math.abs((o1 - o2) / o1 * 100);
 		return percentageDiff;
 	}
 
@@ -1003,7 +1003,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 	 */
 	private void logDifferenceToFile(String key, String columnName1, Object columnValue1, String columnName2,
 	        Object columnValue2, String percentageDiff, String absDiff) throws IOException {
-		StringTokenizer st = new StringTokenizer(key, "+");
+		StringTokenizer st = new StringTokenizer(key, "¶");
 
 		while (st.hasMoreTokens()) {
 			m_logger.write(st.nextToken());
