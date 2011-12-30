@@ -200,8 +200,8 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
                 if (line != null) {
                     ArrayList row = new ArrayList();
                      
-                    String pattern = m_Properties.getProperty("delimiter", " ") + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
-                    String[] fields = correctLine(line).split(pattern);
+                    String pattern = "\\" + m_Properties.getProperty("delimiter", " ") + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+                    String[] fields = correctLine(line).split(pattern, -1);
                     
                     for (int i = 0; i < fields.length; i++) {
 						
@@ -336,7 +336,7 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
             int pos = line.indexOf(delimiter + delimiter);
 
             StringBuilder sb = new StringBuilder(line);
-            sb.insert(pos + 1, "0");
+            sb.insert(pos + 1, " ");
 
             line = sb.toString();
         }
@@ -344,7 +344,7 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
         if (m_Properties.getProperty("appendDelimiter").equals("true")) {
             // the line might have spaces in the last column, but have no final
             // delimiter, so add it here
-            line = line + "0" + delimiter;
+            line = line + " " + delimiter;
         }
 
         return line;
@@ -427,7 +427,7 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
      */
     private Object castObject(Object o, String columnDataType) {
         if (columnDataType.equals("java.lang.Double")) {
-			String clean = ((String) o).replaceAll("\"", "");
+			String clean = ((String) o).replaceAll("\"", "").trim();
             return new Double(Recxx.m_dpFormatter.format(Double
                     .parseDouble(clean.equals("") ? "0" : clean)));
         } else if (columnDataType.equals("java.lang.Integer"))
