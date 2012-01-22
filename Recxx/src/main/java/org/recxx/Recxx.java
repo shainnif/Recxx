@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.recxx.domain.ComparisonResult;
 import org.recxx.exception.PropertiesFileException;
 import org.recxx.facades.DatabaseFacadeWorker;
 import org.recxx.facades.FileFacadeWorker;
@@ -26,6 +27,7 @@ import org.recxx.facades.RecxxWorker;
 import org.recxx.utils.ArrayUtils;
 import org.recxx.utils.CONSTANTS;
 import org.recxx.utils.CloseableUtils;
+import org.recxx.utils.ComparisonUtils;
 import org.recxx.utils.ReconciliationMode;
 import org.recxx.utils.SuperProperties;
 import org.recxx.writer.BufferedWriterManager;
@@ -219,7 +221,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		String input1Alias, input2Alias;
 
 		int input1MatchedRows = 0;
-		float tolerancePercentage, smallestAbsoluteValue;
+		BigDecimal tolerancePercentage, smallestAbsoluteValue;
 
 		LOGGER.info("Starting to reconcile data sources...");
 
@@ -252,8 +254,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 				        + " vs " + input2CompareColumnPosition.length);
 
 			// now set the tolerance level as a percentage
-			tolerancePercentage = Float.parseFloat(((String) inputProperties1.get("tolerance")));
-			smallestAbsoluteValue = Float.parseFloat(((String) inputProperties1.get("smallestAbsoluteValue")));
+			tolerancePercentage = BigDecimal.valueOf((Double)inputProperties1.get("tolerance"));
+			smallestAbsoluteValue = BigDecimal.valueOf((Double)inputProperties1.get("smallestAbsoluteValue"));
 
 			Iterator inputIterator = inputData1.keySet().iterator();
 
@@ -275,133 +277,19 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 						Object o1 = ((ArrayList) inputData1.get(key)).get(input1CompareColumnPosition[i]);
 						Object o2 = ((ArrayList) inputData2.get(key)).get(input2CompareColumnPosition[i]);
 
-						if (o1 instanceof Double && o2 instanceof Double) {
-							// only look at rows greater than the absolute
-							// smallest value specified
-							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-							        || (Math.abs((Double) o2) > smallestAbsoluteValue)) {
-								double percentageDiff;
-								percentageDiff = calculatePercentageDifference((Double) o1, (Double) o2);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff;
-									absDiff = Math.abs((Double) o1 - (Double) o2);
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof BigDecimal && o2 instanceof Double) {
-							// only look at rows greater than the absolute
-							// smallest value specified
-							// NSB - 16/6/04 - Added as Oracle returns Big
-							// Decimals
-							if ((Math.abs(((BigDecimal) o1).doubleValue()) > smallestAbsoluteValue)
-							        || (Math.abs((Double) o2) > smallestAbsoluteValue)) {
-								double percentageDiff =
-								        Math.abs(((((BigDecimal) o1).doubleValue() - (Double) o2) / ((BigDecimal) o1)
-								                .doubleValue()) * 100);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff = Math.abs(((BigDecimal) o1).doubleValue() - (Double) o2);
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof Double && o2 instanceof BigDecimal) {
-							// only look at rows greater than the absolute
-							// smallest value specified
-							// NSB - 16/6/04 - Added as Oracle returns Big
-							// Decimals
-							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-							        || (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
-								double percentageDiff =
-								        Math.abs(((((Double) o1) - ((BigDecimal) o2).doubleValue()) / (Double) o1) * 100);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff = Math.abs((Double) o1 - ((BigDecimal) o2).doubleValue());
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
-
-							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
-							        || ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
-                        		BigDecimal percentageDiff = ((BigDecimal) o1).subtract(((BigDecimal) o2)).divide(( ((BigDecimal) o1).compareTo(BigDecimal.valueOf(0)) == 0  ? (BigDecimal) o2 : (BigDecimal) o1),6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-								if (percentageDiff.compareTo(BigDecimal.valueOf(tolerancePercentage)) == 1) {
-									BigDecimal absDiff = ((BigDecimal) o1).subtract((BigDecimal) o2).abs();
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof Integer && o2 instanceof Integer) {
-							try {
-								// only look at rows greater than the absolute
-								// smallest value specified
-								if (Math.abs(((Integer) o1).intValue()) > smallestAbsoluteValue
-								        || Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
-									int percentageDiff = Math.abs((((Integer) o1 - (Integer) o2) / (Integer) o1) * 100);
-									if (percentageDiff > tolerancePercentage) {
-										int absDiff = Math.abs((Integer) o1 - (Integer) o2);
-										logDifference((String) inputProperties1.get("key"), key, input1Alias,
-										        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-										        inputColumns2[input2CompareColumnPosition[i]], o2,
-										        valueOf(percentageDiff), valueOf(absDiff));
-										matchedRow = false;
-									}
-								}
-							} catch (ArithmeticException ae) {
-								if (!o1.equals(o2)) {
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-									matchedRow = false;
-								}
-
-							}
-						} else if (o1 instanceof String && o2 instanceof String) {
-							if (!o1.equals(o2)) {
+						try {
+							// TODO Add support of equalsIgnoreCase for Strings
+							ComparisonResult result = ComparisonUtils.compare(o1, o2, smallestAbsoluteValue, tolerancePercentage, false);
+							if (result.isDifferent()) {
 								logDifference((String) inputProperties1.get("key"), key, input1Alias,
 								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
+								        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(result.getPercentageDifference()),
+								        valueOf(result.getAbsoluteDifference()));
 							}
-						} else if (o1 instanceof Boolean && o2 instanceof Boolean) {
-
-							if (!o1.equals(o2)) {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else if (o1 instanceof java.util.Date && o2 instanceof java.util.Date) {
-							if (!o1.equals(o2)) {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else if (o1 == null || o2 == null) {
-							if (o1 == null && o2 == null) {
-								// do nothing
-							} else {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else {
-							LOGGER.severe("Either encountered 2 different data types, or un-handled data type!");
-							LOGGER.severe("O1= " + o1.getClass().getName() + ", O2= " + o2.getClass().getName());
+						
+						}
+						catch (UnsupportedOperationException e) {
+							LOGGER.severe("Data type comparison issue found: " + e.getMessage());
 							unhandledRow = true;
 						}
 					}
@@ -467,12 +355,6 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		logSummary(input1Alias, inputData1Size, input2Alias, inputData2Size, input1MatchedRows);
 	}
 
-	private double calculatePercentageDifference(Double o1, Double o2) {
-		double percentageDiff;
-		percentageDiff = Math.abs((o1 - o2) / o1 * 100);
-		return percentageDiff;
-	}
-
 	/**
 	 * Method recData.
 	 * 
@@ -492,8 +374,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 		String input2Alias;
 
 		int input1MatchedRows = 0;
-		float tolerancePercentage;
-		float smallestAbsoluteValue;
+		BigDecimal tolerancePercentage, smallestAbsoluteValue;
 
 		LOGGER.info("Starting to reconcile data sources...");
 
@@ -524,8 +405,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 				        + " vs " + input2CompareColumnPosition.length);
 
 			// now set the tolerance level as a percentage
-			tolerancePercentage = Float.parseFloat(((String) inputProperties1.get("tolerance")));
-			smallestAbsoluteValue = Float.parseFloat(((String) inputProperties1.get("smallestAbsoluteValue")));
+			tolerancePercentage = BigDecimal.valueOf((Double)inputProperties1.get("tolerance"));
+			smallestAbsoluteValue = BigDecimal.valueOf((Double)inputProperties1.get("smallestAbsoluteValue"));
 
 			Iterator inputIterator = inputData1.keySet().iterator();
 
@@ -546,128 +427,19 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 						Object o1 = ((ArrayList) inputData1.get(key)).get(input1CompareColumnPosition[i]);
 						Object o2 = ((ArrayList) inputData2.get(key)).get(input2CompareColumnPosition[i]);
 
-						if (o1 instanceof Double && o2 instanceof Double) {
-							// only look at rows greater than the absolute smallest value specified
-							if (Math.abs((Double) o1) > smallestAbsoluteValue
-							        || Math.abs((Double) o2) > smallestAbsoluteValue) {
-								double percentageDiff = Math.abs((((Double) o1 - (Double) o2) / ((Double) o1)) * 100);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff;
-									absDiff = Math.abs((Double) o1 - ((Double) o2));
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof BigDecimal && o2 instanceof Double) {
-							// only look at rows greater than the absolute smallest value specified
-							// NSB - 16/6/04 - Added as Oracle returns Big Decimals
-							if ((Math.abs(((BigDecimal) o1).doubleValue()) > smallestAbsoluteValue)
-									|| (Math.abs(((Double) o2)) > smallestAbsoluteValue)) {
-								double percentageDiff =
-								        Math.abs(((((BigDecimal) o1).doubleValue() - ((Double) o2)) / ((BigDecimal) o1)
-								                .doubleValue()) * 100);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff = Math.abs(((BigDecimal) o1).doubleValue() - ((Double) o2));
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof Double && o2 instanceof BigDecimal) {
-							// only look at rows greater than the absolute
-							// smallest value specified
-							// NSB - 16/6/04 - Added as Oracle returns Big
-							// Decimals
-							if ((Math.abs((Double) o1) > smallestAbsoluteValue)
-									|| (((BigDecimal) o2).abs().doubleValue() > smallestAbsoluteValue)) {
-								double percentageDiff =
-								        Math.abs((((Double) o1 - ((BigDecimal) o2).doubleValue()) / (Double) o1) * 100);
-								if (percentageDiff > tolerancePercentage) {
-									double absDiff = Math.abs((Double) o1 - ((BigDecimal) o2).doubleValue());
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof BigDecimal && o2 instanceof BigDecimal) {
-							if (((BigDecimal) o1).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1
-									|| ((BigDecimal) o2).abs().compareTo(BigDecimal.valueOf(smallestAbsoluteValue)) == 1) {
-                        		BigDecimal percentageDiff = ((BigDecimal) o1).subtract(((BigDecimal) o2)).divide(( ((BigDecimal) o1).compareTo(BigDecimal.valueOf(0)) == 0  ? (BigDecimal) o2 : (BigDecimal) o1),6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
-								if (percentageDiff.compareTo(BigDecimal.valueOf(tolerancePercentage)) == 1) {
-									BigDecimal absDiff = ((BigDecimal) o1).subtract((BigDecimal) o2).abs();
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(percentageDiff),
-									        valueOf(absDiff));
-									matchedRow = false;
-								}
-							}
-						} else if (o1 instanceof Integer && o2 instanceof Integer) {
-							try {
-								// only look at rows greater than the absolute
-								// smallest value specified
-								if (Math.abs(((Integer) o1).intValue()) > smallestAbsoluteValue
-										|| Math.abs(((Integer) o2).intValue()) > smallestAbsoluteValue) {
-									int percentageDiff = Math.abs((((Integer) o1 - (Integer) o2) / (Integer) o1) * 100);
-									if (percentageDiff > tolerancePercentage) {
-										int absDiff = Math.abs((Integer) o1 - (Integer) o2);
-										logDifference((String) inputProperties1.get("key"), key, input1Alias,
-										        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-										        inputColumns2[input2CompareColumnPosition[i]], o2,
-										        valueOf(percentageDiff), valueOf(absDiff));
-										matchedRow = false;
-									}
-								}
-							} catch (ArithmeticException ae) {
-								if (!o1.equals(o2)) {
-									logDifference((String) inputProperties1.get("key"), key, input1Alias,
-									        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-									        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-									matchedRow = false;
-								}
-
-							}
-						} else if (o1 instanceof String && o2 instanceof String) {
-							if (!(o1.equals(o2))) {
+						try {
+							// TODO Add support of equalsIgnoreCase for Strings
+							ComparisonResult result = ComparisonUtils.compare(o1, o2, smallestAbsoluteValue, tolerancePercentage, false);
+							if (result.isDifferent()) {
 								logDifference((String) inputProperties1.get("key"), key, input1Alias,
 								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
+								        inputColumns2[input2CompareColumnPosition[i]], o2, valueOf(result.getPercentageDifference()),
+								        valueOf(result.getAbsoluteDifference()));
 							}
-						} else if (o1 instanceof Boolean && o2 instanceof Boolean) {
-
-							if (!o1.equals(o2)) {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else if (o1 instanceof java.util.Date && o2 instanceof java.util.Date) {
-							if (!(o1.equals(o2))) {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else if (o1 == null || o2 == null) {
-							if (o1 == null && o2 == null) {
-								// do nothing
-							} else {
-								logDifference((String) inputProperties1.get("key"), key, input1Alias,
-								        inputColumns1[input1CompareColumnPosition[i]], o1, input2Alias,
-								        inputColumns2[input2CompareColumnPosition[i]], o2, "", "");
-								matchedRow = false;
-							}
-						} else {
-							LOGGER.severe("Either encountered 2 different data types, or un-handled data type!");
-							LOGGER.severe("O1= " + o1.getClass().getName() + ", O2= " + o2.getClass().getName());
+						
+						}
+						catch (UnsupportedOperationException e) {
+							LOGGER.severe("Data type comparison issue found: " + e.getMessage());
 						}
 					}
 
