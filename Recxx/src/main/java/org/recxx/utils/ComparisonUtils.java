@@ -40,8 +40,12 @@ public class ComparisonUtils {
 									(BigDecimal)converter.convert(BigDecimal.class, o2), 
 									smallestAbsoluteValue, tolerancePercentage);
 		}
-		else
+		else {
+			if (o1 != null && o2 != null && o1.getClass() != o2.getClass()) {
+				throw new UnsupportedOperationException(o1.getClass().getName() + " cannot be compared to " + o2.getClass().getName());
+			}
 			result = compareNonNumeric(o1, o2, equalsIgnoreCase);
+		}
 		return result;
 	}
 		
