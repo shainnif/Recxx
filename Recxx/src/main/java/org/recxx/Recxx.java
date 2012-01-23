@@ -254,8 +254,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 				        + " vs " + input2CompareColumnPosition.length);
 
 			// now set the tolerance level as a percentage
-			tolerancePercentage = BigDecimal.valueOf((Double)inputProperties1.get("tolerance"));
-			smallestAbsoluteValue = BigDecimal.valueOf((Double)inputProperties1.get("smallestAbsoluteValue"));
+			tolerancePercentage = new BigDecimal((String)inputProperties1.get("tolerance"));
+			smallestAbsoluteValue = new BigDecimal((String)inputProperties1.get("smallestAbsoluteValue"));
 
 			Iterator inputIterator = inputData1.keySet().iterator();
 
@@ -405,8 +405,8 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 				        + " vs " + input2CompareColumnPosition.length);
 
 			// now set the tolerance level as a percentage
-			tolerancePercentage = BigDecimal.valueOf((Double)inputProperties1.get("tolerance"));
-			smallestAbsoluteValue = BigDecimal.valueOf((Double)inputProperties1.get("smallestAbsoluteValue"));
+			tolerancePercentage = new BigDecimal((String)inputProperties1.get("tolerance"));
+			smallestAbsoluteValue = new BigDecimal((String)inputProperties1.get("smallestAbsoluteValue"));
 
 			Iterator inputIterator = inputData1.keySet().iterator();
 

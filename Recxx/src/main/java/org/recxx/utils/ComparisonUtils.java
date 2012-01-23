@@ -17,7 +17,7 @@ public class ComparisonUtils {
 
 	public static BigDecimal percentageDifference(BigDecimal o1, BigDecimal o2) {
 		BigDecimal original = o1.compareTo( BigDecimal.ZERO ) == 0  ? o2 : o1;
-		return o2.subtract(o1).divide(original, 6, RoundingMode.HALF_UP).multiply( BigDecimal.valueOf(100) );
+		return o1.subtract(o2).divide(original, 6, RoundingMode.HALF_UP).multiply( BigDecimal.valueOf(100) );
 	}
 	
 	public static ComparisonResult compare(Object o1, Object o2) {
