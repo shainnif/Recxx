@@ -1,18 +1,22 @@
 package org.recxx.facades;
 
-import org.recxx.AbstractRecFeed;
-import org.recxx.Recxx;
-import org.recxx.utils.ArrayUtils;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.recxx.AbstractRecFeed;
+import org.recxx.Recxx;
+import org.recxx.utils.ArrayUtils;
 
 /**
  * This class represents a facade on to a file for use as a data source when
@@ -21,7 +25,7 @@ import java.util.logging.Logger;
 public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
     private Recxx m_Rec = null;
     private String m_ColumnNames = "";
-    private static SimpleDateFormat m_Dtf = new SimpleDateFormat();
+    private SimpleDateFormat m_Dtf = new SimpleDateFormat();
 
     private List<Integer> m_KeyPositions;
     private List<Integer> m_ComparePositions;
@@ -74,6 +78,7 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
         m_Properties = p;
 
         m_ColumnNames = m_Properties.getProperty("columns");
+        m_Dtf.applyPattern(m_Properties.getProperty("dateFormat"));
     }
 
     /**
@@ -173,7 +178,7 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
         m_KeyColumns = ArrayUtils.convertStringKeyToArray(key);
         m_CompareColumns = ArrayUtils.convertStringKeyToArray(
                 m_Properties.getProperty("columnsToCompare"));
-        // m_ReducedColumns = addArrays(m_KeyColumns,m_CompareColumns);
+//         m_ReducedColumns = addArrays(m_KeyColumns,m_CompareColumns);
         m_ReducedColumns = addArraysProperly(columns, m_KeyColumns,
                 m_CompareColumns);
 
@@ -445,7 +450,6 @@ public class FileFacadeWorker extends AbstractRecFeed implements RecxxWorker {
             if (o.equals("0"))
                 return null;
 
-            m_Dtf.applyPattern(m_Properties.getProperty("dateFormat"));
             try {
                 return m_Dtf.parse((String) o);
             } catch (ParseException pe) {
