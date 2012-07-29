@@ -1,14 +1,14 @@
 package org.recxx.writer;
 
-import static org.recxx.utils.ArrayUtils.isIndexOfLastArrayElement;
-import static org.recxx.utils.StringUtils.isNullOrEmpty;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
+
+import static org.recxx.utils.ArrayUtils.isIndexOfLastArrayElement;
+import static org.recxx.utils.StringUtils.isNullOrEmpty;
 
 /**
  * <p>
@@ -122,7 +122,7 @@ public class CSVLogger {
 	}
 
 	/**
-	 * return the default value to be written to file when a null or space is encountered in the string to be written.
+	 * return the default value to be written to file when a null or space is encountered in the value to be written.
 	 * <p/>
 	 * Note: BCP formatted csv files need ,, to input a null in BCP, while StringTokenizers reading a formatted CSV file
 	 * will need , ,
@@ -134,7 +134,7 @@ public class CSVLogger {
 	}
 
 	/**
-	 * return the default value to be written to file when a null or space is encountered in the string to be written.
+	 * return the default value to be written to file when a null or space is encountered in the value to be written.
 	 * <p/>
 	 * Note: BCP formatted csv files need ,, to input a null in BCP, while StringTokenizers reading a formatted CSV file
 	 * will need , ,

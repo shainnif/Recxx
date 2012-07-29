@@ -1,19 +1,15 @@
 package org.recxx.facades;
 
+import org.recxx.AbstractRecFeed;
+import org.recxx.Recxx;
+import org.recxx.utils.FileUtils;
+
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.recxx.AbstractRecFeed;
-import org.recxx.Recxx;
-import org.recxx.utils.FileUtils;
 
 /**
  * This class represents a facade on to a Database for use as a data source when

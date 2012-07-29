@@ -1,19 +1,16 @@
 package org.recxx.utils;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CloseableUtilsTest {
@@ -23,7 +20,7 @@ public class CloseableUtilsTest {
 
 	private final CloseableUtils closeableUtils = new CloseableUtils();
 
-	@Test
+	@org.junit.Test
 	public void tryToCloseShouldCloseTheCloseable() throws Exception {
 		IOException exceptionThrownWhenClosing = closeableUtils.tryToClose(closeableMock);
 		verify(closeableMock).close();
@@ -31,7 +28,7 @@ public class CloseableUtilsTest {
 		assertThat(exceptionThrownWhenClosing, is(nullValue()));
 	}
 
-	@Test
+	@org.junit.Test
 	public void tryToCloseShouldReturnExceptionThrownFromCloseOfCloseable() throws Exception {
 		IOException testException = new IOException("Test exception");
 		doThrow(testException).when(closeableMock).close();

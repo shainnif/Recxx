@@ -1,13 +1,9 @@
 package org.recxx.writer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.LinkedList;
-
 import org.recxx.utils.CloseableUtils;
+
+import java.io.*;
+import java.util.LinkedList;
 
 public class BufferedWriterManager {
 

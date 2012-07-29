@@ -1,22 +1,18 @@
 package org.recxx.facades;
 
+import org.recxx.AbstractRecFeed;
+import org.recxx.Recxx;
+import org.recxx.utils.ArrayUtils;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.recxx.AbstractRecFeed;
-import org.recxx.Recxx;
-import org.recxx.utils.ArrayUtils;
 
 /**
  * This class represents a facade on to a file for use as a data source when

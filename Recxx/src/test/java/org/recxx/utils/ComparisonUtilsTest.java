@@ -1,13 +1,13 @@
 package org.recxx.utils;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 public class ComparisonUtilsTest {
 

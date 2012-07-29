@@ -45,7 +45,7 @@ public class ArrayUtils {
 	}
 
 	/**
-	 * Converts the string key back into an array of key columns
+	 * Converts the value key back into an array of key columns
 	 * 
 	 * @param keys
 	 *            key to convert

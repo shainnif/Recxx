@@ -1,9 +1,13 @@
 package org.recxx;
 
-import static java.lang.String.format;
-import static java.lang.String.valueOf;
-import static org.recxx.utils.ReconciliationMode.OW;
-import static org.recxx.utils.ReconciliationMode.TW;
+import org.recxx.domain.ComparisonResult;
+import org.recxx.exception.PropertiesFileException;
+import org.recxx.facades.DatabaseFacadeWorker;
+import org.recxx.facades.FileFacadeWorker;
+import org.recxx.facades.RecxxWorker;
+import org.recxx.utils.*;
+import org.recxx.writer.BufferedWriterManager;
+import org.recxx.writer.CSVLogger;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,26 +15,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.logging.Logger;
 
-import org.recxx.domain.ComparisonResult;
-import org.recxx.exception.PropertiesFileException;
-import org.recxx.facades.DatabaseFacadeWorker;
-import org.recxx.facades.FileFacadeWorker;
-import org.recxx.facades.RecxxWorker;
-import org.recxx.utils.ArrayUtils;
-import org.recxx.utils.CONSTANTS;
-import org.recxx.utils.CloseableUtils;
-import org.recxx.utils.ComparisonUtils;
-import org.recxx.utils.ReconciliationMode;
-import org.recxx.utils.SuperProperties;
-import org.recxx.writer.BufferedWriterManager;
-import org.recxx.writer.CSVLogger;
+import static java.lang.String.format;
+import static java.lang.String.valueOf;
+import static org.recxx.utils.ReconciliationMode.OW;
+import static org.recxx.utils.ReconciliationMode.TW;
 
 /**
  * Generic SQL based reconciliation tool to allow comparison between data sources which support the JDBC/SQL protocols,
@@ -774,7 +765,7 @@ public class Recxx extends AbstractRecFeed implements Runnable {
 	 */
 	private void logDifferenceToFile(String key, String columnName1, Object columnValue1, String columnName2,
 	        Object columnValue2, String percentageDiff, String absDiff) throws IOException {
-		StringTokenizer st = new StringTokenizer(key, "¶");
+		StringTokenizer st = new StringTokenizer(key, "\u00B6");
 
 		while (st.hasMoreTokens()) {
 			m_logger.write(st.nextToken());

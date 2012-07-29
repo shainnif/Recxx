@@ -1,6 +1,7 @@
 package org.recxx;
 
-import static java.lang.Boolean.valueOf;
+import org.recxx.utils.ArrayUtils;
+import org.recxx.utils.SuperProperties;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +18,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.recxx.utils.ArrayUtils;
-import org.recxx.utils.SuperProperties;
+import static java.lang.Boolean.valueOf;
 
 /**
  * Abstract class created to represent common methods for handling a
@@ -132,7 +132,7 @@ public abstract class AbstractRecFeed {
         for (int keyColumnPosition : keyColumnPositions) {
             Object o = row.get(keyColumnPosition);
             if (o != null) {
-                sb.append(o.toString()).append("¶");
+                sb.append(o.toString()).append("\u00B6");
             }
         }
         return sb.toString();

@@ -1,9 +1,9 @@
 package org.recxx.exception;
 
+import org.junit.Test;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-
-import org.junit.Test;
 
 public class PropertiesFileExceptionTest {
 

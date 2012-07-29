@@ -1,15 +1,14 @@
 package org.recxx.utils;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.recxx.utils.ArrayUtils.isIndexOfLastArrayElement;
+import junit.framework.Assert;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.recxx.utils.ArrayUtils.isIndexOfLastArrayElement;
 
 /**
  * Created by Shaine Ismail. User: sismail Date: 23/08/2011 Time: 18:28 Copyright SNI-Services ltd

@@ -1,10 +1,10 @@
 package org.recxx.utils;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import org.apache.commons.beanutils.converters.BigDecimalConverter;
 import org.recxx.domain.ComparisonResult;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class ComparisonUtils {
 	
